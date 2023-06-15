@@ -104,7 +104,7 @@ class PostsConnection(Database):
         self.post_collection.insert_one(post)
 
     # Read user posts
-    def seeUserPosts(self,user_id):
+    def readUserPosts(self,user_id):
         user_posts = []
         from bson.objectid import ObjectId
         _id = ObjectId(user_id)

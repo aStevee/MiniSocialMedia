@@ -112,8 +112,14 @@ def seeLast10Posts():
         print(f"Content:{post['Content']}")
         print("--------------------------\n")
 
-def readUserPosts():
-    pass
+# Read user posts
+def readUserPosts(user_id):
+    posts = MyPostConection.readUserPosts(user_id)
+    for post in posts:
+        print(f"-------------------{MyUserConection.getDataFromID(post['ID_USER'])['Username']}:")
+        print(f"Title:{post['Header']}")
+        print(f"Content:{post['Content']}")
+        print("--------------------------\n")
 
 # Create new post
 def createNewPost(user, user_id):
@@ -148,8 +154,10 @@ def userMode():
         elif option == '2':
             createNewPost(user,str(user_id))
 
+        # See user posts
         elif option == '3':
-            pass
+            readUserPosts(user_id)
+
         elif option == '4':
             pass
         elif option == '5':
