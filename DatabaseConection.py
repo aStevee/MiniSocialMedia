@@ -16,10 +16,8 @@ printer = pprint.PrettyPrinter()
 class Database():
     def __init__(self):
         self.Db = client.MiniSocialMedia
-        
 
-
-
+##########################################################################################
 class UserConnection(Database):
     def __init__(self):
         super().__init__()
@@ -101,13 +99,12 @@ class PostsConnection(Database):
         self.post_collection.insert_one(post)
 
     # Read user posts
-    def readUserPosts(self,user_id):
+    def readUserPosts(self, user_id):
         user_posts = []
-        from bson.objectid import ObjectId
-        _id = ObjectId(user_id)
 
-        posts = self.post_collection.find({'_id':_id})
-        user_posts = [post for post in reversed(posts)]
+        posts = self.post_collection.find({'ID_USER': str(user_id)}).sort('Date', -1)# I was here
+        for post in posts:
+            user_posts.append(post)
         
         return user_posts
 

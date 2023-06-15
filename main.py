@@ -15,6 +15,14 @@ MyPostConection = PostsConnection()
 
 #################################################################
 # Main things and important methods
+def extract_date_time(string):
+    date, time = string.split(' ')
+    date = date.split('-')
+    formatted_date = '{}/{}/{}'.format(date[2], date[1], date[0])
+    time = time.split(':')
+    formatted_time = '{}:{}'.format(time[0], time[1])
+    return formatted_date, formatted_time
+
 
 # Select user or admin
 def select_acount():
@@ -107,20 +115,26 @@ def seeLast10Posts():
     posts = MyPostConection.read_10_posts()
     
     for post in posts[::-1]:
-        print(f"-------------------{MyUserConection.getDataFromID(post['ID_USER'])['Username']}:")
-        print(f"Title:{post['Header']}")
-        print(f"Content:{post['Content']}")
-        print("--------------------------\n")
+        date,time = extract_date_time(str(post['Date']))
+        print(f"--------------------------{MyUserConection.getDataFromID(post['ID_USER'])['Username']}:")
+        print(f"Title: {post['Header']}")
+        print(f"Content: {post['Content']}")
+        print(f"-----------------{date} at {time}------------\n")
 
 # Read user posts
 def readUserPosts(user_id):
     posts = MyPostConection.readUserPosts(user_id)
-    for post in posts:
-        print(f"-------------------{MyUserConection.getDataFromID(post['ID_USER'])['Username']}:")
-        print(f"Title:{post['Header']}")
-        print(f"Content:{post['Content']}")
-        print("--------------------------\n")
-
+   
+    if posts is not None:
+        for post in posts:
+            date,time = extract_date_time(str(post['Date']))
+            print(f"--------------------------{MyUserConection.getDataFromID(post['ID_USER'])['Username']}:")
+            print(f"Title: {post['Header']}")
+            print(f"Content: {post['Content']}")
+            print(f"-----------------{date} at {time}------------\n")
+    else:
+        print("You have not created any post!\n")
+        
 # Create new post
 def createNewPost(user, user_id):
     print("\n-------------------------------------")
@@ -134,7 +148,8 @@ def createNewPost(user, user_id):
     print("Post published!")
 
 # Create a new post, the user can select users, and see them
-def createNewList():
+def createNewList(user_id):
+    print(f"Ok {MyUserConection.getDataFromID(user_id)['Username']}, you have to introduce a post's name, a description and select the users")
     print("Type post's name")
     Name = input(": ")
 
