@@ -83,15 +83,12 @@ class PostsConnection(Database):
         self.post_collection = self.Db.Posts
 
     def read_10_posts(self):
-        # End this Pau please
-        Last_10_posts = []
         cursor = self.post_collection.find().sort('Date', -1).limit(10)
-        for post in cursor:
-            Last_10_posts.append(post)
+        Last_10_posts = [post for post in cursor]
 
         return Last_10_posts
 
-    # Insert post
+    # Create a new post
     def public_post(self,User_id,Name, Description, Category = []):
         post = {
         "ID_USER": User_id,
@@ -110,8 +107,7 @@ class PostsConnection(Database):
         _id = ObjectId(user_id)
 
         posts = self.post_collection.find({'_id':_id})
-        for post in posts[::-1]:
-            user_posts.append(post)
+        user_posts = [post for post in reversed(posts)]
         
         return user_posts
 
@@ -120,7 +116,39 @@ class ListsConnection(Database):
         super().__init__()
         self.List_collection = self.Db.Lists
 
+    # Create a new list
+    def create_list(self, Name, Description):
+        new_list = {
+            "Name": Name,
+            "Description": Description,
+            "participants": []
+        }
 
+        self.List_collection.insert_one(new_list)
+
+    # Add a new user on the list
+    def addNewUser(self, list_id,user_id):
+        from bson.objectid import ObjectId
+        _id = ObjectId(list_id)
+
+        # Update the document with the new item in the array
+        self.List_collection.insert_one(
+            {'_id':_id},
+            {'$push':{'description':user_id}}
+        )
+
+
+    # Read all IDs from the list
+    def read_IDs_from_post(self, post_id):
+        from bson.objectid import ObjectId
+        _id = ObjectId(post_id)
+
+        posts = self.List_collection.find({'_id':_id})
+        post_ids = [post.get('IDs', []) for post in posts]
+
+        return post_ids
+
+    
 
 if __name__ == '__main__':
     MyUserConection = UserConnection()

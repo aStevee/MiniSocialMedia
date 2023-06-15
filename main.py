@@ -127,11 +127,24 @@ def createNewPost(user, user_id):
     print("Create new post!\n")
     
     title = input(f"First, {user}, introduce the title: ")
-    content = input("Introduce the content: ")
+    content = input("Type the content: ")
    
     MyPostConection.public_post(str(user_id), title, content)
     
     print("Post published!")
+
+# Create a new post, the user can select users, and see them
+def createNewList():
+    print("Type post's name")
+    Name = input(": ")
+
+    print("Type a description")
+    Description = input(": ")
+
+    
+
+
+
 
 # Main while user mode and inculde its metohds
 def userMode():
@@ -158,8 +171,10 @@ def userMode():
         elif option == '3':
             readUserPosts(user_id)
 
+        # Create new list
         elif option == '4':
-            pass
+            createNewList(user_id)
+
         elif option == '5':
             pass
         elif option == '6':
