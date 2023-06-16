@@ -12,6 +12,7 @@ admin_user = "Palolo"
 admin_password = "12345"
 MyUserConection = UserConnection()
 MyPostConection = PostsConnection()
+MyListConection = ListsConnection()
 
 #################################################################
 # Main things and important methods
@@ -94,7 +95,8 @@ def printUserModeOption(user):
     print("3- See all my posts")
     print("4- Create a new list")
     print("5- See all posts from specific list")
-    print("6- Exit")
+    print("7- Modify user post")
+    print("8- Exit")
 
 # This function is for login. In case the user doenen't work, will be redirect in main panel.
 def user_login():
@@ -126,7 +128,7 @@ def readUserPosts(user_id):
     posts = MyPostConection.readUserPosts(user_id)
    
     if posts is not None:
-        for post in posts:
+        for post in posts[::-1]:
             date,time = extract_date_time(str(post['Date']))
             print(f"--------------------------{MyUserConection.getDataFromID(post['ID_USER'])['Username']}:")
             print(f"Title: {post['Header']}")
@@ -149,15 +151,42 @@ def createNewPost(user, user_id):
 
 # Create a new post, the user can select users, and see them
 def createNewList(user_id):
-    print(f"Ok {MyUserConection.getDataFromID(user_id)['Username']}, you have to introduce a post's name, a description and select the users")
-    print("Type post's name")
+    print(f"Ok {MyUserConection.getDataFromID(user_id)['Username']}, you have to introduce the post name, a description and select the users")
+    print("Type post name")
     Name = input(": ")
 
-    print("Type a description")
+    # Prompt for the description
+    print("Type a description:")
     Description = input(": ")
 
-    
+    # Create a new list with the provided name and description
+    post_id = MyListConection.create_list(Name, Description, user_id)
 
+    # Retrieve a list of user names
+    Users = MyUserConection.showUserNames()
+    #try:
+    for user in Users:
+        print(user, end=" - ")
+
+    # Prompt the user to enter a user name
+    user_selected_id = MyUserConection.getIdFromUser(input("\nText user name: "))
+    MyListConection.addNewUser(post_id,user_selected_id)
+    while True:    
+        # Ask the user if they want to add another user to the list
+        if not input("Would you like add another user in the list?(Y/N)").lower() == "y":
+            break  
+        
+        for user in Users:
+            print(user, end=" - ")        
+
+        user_selected_id = MyUserConection.getIdFromUser(input("\nText user name: "))
+        MyListConection.addNewUser(post_id,user_selected_id)
+        
+    """          
+    except TypeError:
+        # Handle the case where an incorrect user is selected
+        print("Selet a correct user!")"""  
+        
 
 
 
@@ -193,15 +222,13 @@ def userMode():
         elif option == '5':
             pass
         elif option == '6':
+            pass
+        elif option == '7':
+            pass
+        elif option == '8':
             break
         else:
             print("Choose a correct option!")
-
-
-
-
-
-
 
 
 

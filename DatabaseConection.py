@@ -56,8 +56,11 @@ class UserConnection(Database):
         _id = ObjectId(user_id)
 
         self.user_collection.delete_one({'_id':_id})
-
     
+    # Return a list of user names
+    def showUserNames(self) -> list():
+        users = self.user_collection.find({})
+        return [user['Username'] for user in users]
 
     # Get ID from a username
     def getIdFromUser(self, username):
@@ -100,11 +103,8 @@ class PostsConnection(Database):
 
     # Read user posts
     def readUserPosts(self, user_id):
-        user_posts = []
-
-        posts = self.post_collection.find({'ID_USER': str(user_id)}).sort('Date', -1)# I was here
-        for post in posts:
-            user_posts.append(post)
+        posts = self.post_collection.find({'ID_USER': str(user_id)}).sort('Date', -1)
+        user_posts = [post for post in posts]
         
         return user_posts
 
@@ -114,14 +114,17 @@ class ListsConnection(Database):
         self.List_collection = self.Db.Lists
 
     # Create a new list
-    def create_list(self, Name, Description):
+    def create_list(self, Name, Description, user_id):
         new_list = {
+            "owner_id": str(user_id),
             "Name": Name,
             "Description": Description,
             "participants": []
         }
 
-        self.List_collection.insert_one(new_list)
+        result = self.List_collection.insert_one(new_list)
+
+        return result.inserted_id
 
     # Add a new user on the list
     def addNewUser(self, list_id,user_id):
@@ -129,9 +132,9 @@ class ListsConnection(Database):
         _id = ObjectId(list_id)
 
         # Update the document with the new item in the array
-        self.List_collection.insert_one(
+        self.List_collection.update_one(
             {'_id':_id},
-            {'$push':{'description':user_id}}
+            {"$push": {"participants":str(user_id)}}
         )
 
 
@@ -145,12 +148,12 @@ class ListsConnection(Database):
 
         return post_ids
 
-    
 
 if __name__ == '__main__':
     MyUserConection = UserConnection()
+    MyPostConection = PostsConnection()
     # MyUserConection.addNewUser("Pepino","1234567","pepino@gmail.com",18,"640523319")
 
-    pprint.pprint(MyUserConection.getDataFromID('6489bed5de667e2705ba19c9'))
+    print(MyUserConection.showUserNames())
 
     
