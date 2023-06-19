@@ -147,6 +147,19 @@ class ListsConnection(Database):
         post_ids = [post.get('IDs', []) for post in posts]
 
         return post_ids
+    
+    # Read list with owner_id
+    def readListsFromID(self, user_id):
+        lists = self.List_collection.find({'owner_id':user_id})
+        list_data = [list for list in lists]
+
+        return list_data
+
+    # Get ID of List name
+    def getListID(self, name):
+        lists = self.List_collection.find_one({'Name': name})
+
+        return lists['_id']
 
 
 if __name__ == '__main__':

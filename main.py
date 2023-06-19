@@ -1,7 +1,7 @@
 import re
 import datetime
 import random
-import pprint
+import os 
 from datetime import datetime as dt
 #venv\Scripts\activate
 
@@ -13,6 +13,8 @@ admin_password = "12345"
 MyUserConection = UserConnection()
 MyPostConection = PostsConnection()
 MyListConection = ListsConnection()
+
+os.system('cls')
 
 #################################################################
 # Main things and important methods
@@ -106,10 +108,14 @@ def user_login():
         if MyUserConection.readUserInfo(username=user_name)['Username'] == user_name:
             print("Type your password:")
             user_pass = input(": ")
-            if MyUserConection.readUserInfo(username=user_name)['Password'] == user_pass:
-                return user_name, MyUserConection.readUserInfo(username=user_name)['_id']
+            try:
+                if MyUserConection.readUserInfo(username=user_name)['Password'] == user_pass:
+                    return user_name, MyUserConection.readUserInfo(username=user_name)['_id']
+            except TypeError:
+                print("The password is not correct!")
+                return False, False
     except TypeError:
-        print("Something worng!")
+        print("User not correct!")
         return False, False
 
 # Read 10 last post 
@@ -164,29 +170,46 @@ def createNewList(user_id):
 
     # Retrieve a list of user names
     Users = MyUserConection.showUserNames()
-    #try:
-    for user in Users:
-        print(user, end=" - ")
-
-    # Prompt the user to enter a user name
-    user_selected_id = MyUserConection.getIdFromUser(input("\nText user name: "))
-    MyListConection.addNewUser(post_id,user_selected_id)
-    while True:    
-        # Ask the user if they want to add another user to the list
-        if not input("Would you like add another user in the list?(Y/N)").lower() == "y":
-            break  
-        
+    try:
         for user in Users:
-            print(user, end=" - ")        
+            print(user, end=" - ")
 
+        # Prompt the user to enter a user name
         user_selected_id = MyUserConection.getIdFromUser(input("\nText user name: "))
         MyListConection.addNewUser(post_id,user_selected_id)
-        
-    """          
+        while True:    
+            # Ask the user if they want to add another user to the list
+            if not input("Would you like add another user in the list?(Y/N)").lower() == "y":
+                break  
+            
+            for user in Users:
+                print(user, end=" - ")        
+
+            user_selected_id = MyUserConection.getIdFromUser(input("\nText user name: "))
+            MyListConection.addNewUser(post_id,user_selected_id)
+            
+          
     except TypeError:
-        # Handle the case where an incorrect user is selected
-        print("Selet a correct user!")"""  
-        
+        print("Selet a correct user!")
+
+# See users in the potcasts
+def seeListUser(user_id):
+    print("Select your Post:")
+    MyLists = ListsConnection.readListsFromID(user_id)
+    print(MyLists)
+    """
+    for i in MyLists:
+        print(f"- {i['Name']}")
+    try:
+        list_selected_id = ListsConnection.getListID(input("\nIntroduce the name of the List: "))
+        print(list_selected_id)
+        # End this, i have to see the posts
+    except TypeError:
+        print("Select a correct post!")
+    """
+
+
+
 
 
 
@@ -219,8 +242,10 @@ def userMode():
         elif option == '4':
             createNewList(user_id)
 
+        # See posts from list
         elif option == '5':
-            pass
+            seeListUser(user_id)
+
         elif option == '6':
             pass
         elif option == '7':
