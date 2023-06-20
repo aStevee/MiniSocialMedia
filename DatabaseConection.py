@@ -9,13 +9,13 @@ import datetime
 load_dotenv(find_dotenv())
 password = os.environ.get("MONGODB_PWD")
 connection_string = f"mongodb+srv://pau_mateu:{password}@cluster0.wo7p07a.mongodb.net/?retryWrites=true&w=majority"                
-client = MongoClient(connection_string)
 printer = pprint.PrettyPrinter()
 
-# DB selector
+# Database class to conect MongoClient
 class Database():
     def __init__(self):
-        self.Db = client.MiniSocialMedia
+        self.client = MongoClient(connection_string)
+        self.Db = self.client.MiniSocialMedia
 
 ##########################################################################################
 class UserConnection(Database):
@@ -161,8 +161,16 @@ class ListsConnection(Database):
 
         return lists['_id']
 
+    def getDataFromID(self, list_id):
+        from bson.objectid import ObjectId
+        _id = ObjectId(list_id)
+
+        list_data = self.List_collection.find_one({'_id':_id})
+        return list_data
+
 
 if __name__ == '__main__':
+    os.system('cls')
     MyUserConection = UserConnection()
     MyPostConection = PostsConnection()
     # MyUserConection.addNewUser("Pepino","1234567","pepino@gmail.com",18,"640523319")

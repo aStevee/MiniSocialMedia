@@ -151,6 +151,7 @@ def createListValidation():
 
   Db.command("collMod", "Lists", validator=list_validator)
 if __name__ == '__main__':
+  os.system('cls')
     #createListValidation()
     #createPostValidation()
     #createUserValidation()

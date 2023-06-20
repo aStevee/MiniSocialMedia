@@ -1,6 +1,7 @@
 import re
 import datetime
 import random
+import time
 import os 
 from datetime import datetime as dt
 #venv\Scripts\activate
@@ -97,8 +98,8 @@ def printUserModeOption(user):
     print("3- See all my posts")
     print("4- Create a new list")
     print("5- See all posts from specific list")
-    print("7- Modify user post")
-    print("8- Exit")
+    print("6- Modify user post")
+    print("7- Exit")
 
 # This function is for login. In case the user doenen't work, will be redirect in main panel.
 def user_login():
@@ -194,28 +195,47 @@ def createNewList(user_id):
 
 # See users in the potcasts
 def seeListUser(user_id):
+    members = []
     print("Select your Post:")
-    MyLists = ListsConnection.readListsFromID(user_id)
-    print(MyLists)
-    """
+    MyLists = MyListConection.readListsFromID(user_id)
+
     for i in MyLists:
         print(f"- {i['Name']}")
     try:
-        list_selected_id = ListsConnection.getListID(input("\nIntroduce the name of the List: "))
-        print(list_selected_id)
-        # End this, i have to see the posts
+        # I identificate the id and then i try to get the data.
+        list_selected_id = MyListConection.getListID(input("\nIntroduce the name of the List: "))
+        data_selected = MyListConection.getDataFromID(list_selected_id)
+
+        # Print the Name, descriptions and its members
+        print("--------------------------------------------------")
+        print(f"{data_selected['Name']}")
+        print(f"{data_selected['Description']}")
+        print("\nList members:")
+        for member_id in data_selected['participants']:
+            print(f"- {MyUserConection.getDataFromID(member_id)['Username']}")
+            members.append(MyUserConection.getDataFromID(member_id)['Username'])
+        time.sleep(1)
+
+        # I ask if he wants to see the members posts
+        print(f"\nWould you like to see {', '.join(members)}'s posts? (y/n)")
+        if input("> ").lower() == 'y':
+            while True:
+                for user_id in data_selected['participants']:
+                    print(f"{MyUserConection.getDataFromID(user_id)['Username'].title()}'s posts:")
+                    readUserPosts(user_id)
+                break
+        else:
+            print("OK")
+
+        print("--------------------------------------------------")
+
     except TypeError:
         print("Select a correct post!")
-    """
-
-
-
 
 
 
 # Main while user mode and inculde its metohds
 def userMode():
-    insideLoop = True
     print("-----------------------------------------")
     print("You are in user mode!")    
 
@@ -244,14 +264,15 @@ def userMode():
 
         # See posts from list
         elif option == '5':
-            seeListUser(user_id)
+            seeListUser(str(user_id))
 
+        # Modify the members of a group
         elif option == '6':
             pass
+
         elif option == '7':
-            pass
-        elif option == '8':
             break
+
         else:
             print("Choose a correct option!")
 
