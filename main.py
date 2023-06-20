@@ -219,11 +219,10 @@ def seeListUser(user_id):
         # I ask if he wants to see the members posts
         print(f"\nWould you like to see {', '.join(members)}'s posts? (y/n)")
         if input("> ").lower() == 'y':
-            while True:
-                for user_id in data_selected['participants']:
-                    print(f"{MyUserConection.getDataFromID(user_id)['Username'].title()}'s posts:")
-                    readUserPosts(user_id)
-                break
+            for user_id in data_selected['participants']:
+                print(f"{MyUserConection.getDataFromID(user_id)['Username'].title()}'s posts:")
+                readUserPosts(user_id)
+    
         else:
             print("OK")
 
